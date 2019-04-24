@@ -3,20 +3,20 @@ const cors = require('cors');
 const helmet = require('helmet');
 let port = process.env.PORT || 5000;
 const server = express();
-
+const surveyController = require("./Controllers/surveyController");
 //TODO connect to database
 
 // mount middleware
-server.use(cors())
+server.use(cors());
 server.use(helmet());
 server.use(express.json());
 
 // sanitation check
 server.get('/', (req, res) => {
-  res.json({status: 'connected'})
-})
+  res.json({status: 'connected'});
+});
 
-//TODO add routes
+server.use('/api/v1/survey', surveyController);
 
 //port listener
 server.listen(port , () => {
