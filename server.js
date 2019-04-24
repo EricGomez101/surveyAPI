@@ -16,7 +16,7 @@ server.get('/', (req, res) => {
   res.json({status: 'connected'});
 });
 
-server.use('/api/v1/survey', surveyController);
+server.use('/api/v1/surveys', surveyController);
 
 //port listener
 server.listen(port , () => {

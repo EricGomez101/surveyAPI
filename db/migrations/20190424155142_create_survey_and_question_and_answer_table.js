@@ -12,7 +12,7 @@ exports.up = function(knex, Promise) {
     table.boolean('answer').notNullable();
     table.timestamp('created_at').defaultTo(knex.fn.now());
     table.timestamp('updated_at').defaultTo(knex.fn.now());
-    table.integer('survey_id').references('id').inTable('survey').unique();
+    table.integer('survey_id').references('id').inTable('survey');
   })
   .createTable('answer', (table) => {
       table.integer('question_id').references('id').inTable('question').primary();
@@ -21,5 +21,5 @@ exports.up = function(knex, Promise) {
 };
 
 exports.down = function(knex, Promise) {
-  return knex.schema.dropTable('survery').dropTable('question').dropTable('answer');
+  return knex.schema.dropTable('answer').dropTable('question').dropTable('survey');
 };
