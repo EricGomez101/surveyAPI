@@ -1,0 +1,26 @@
+{
+  "name": "surveyAPI",
+  "version": "1.0.0",
+  "description": "Build the API to allow for the anonymous creation/taking of surveys (i.e. you don't have to create a user account to create a survey).",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EricGomez101/surveyAPI.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EricGomez101/surveyAPI/issues"
+  },
+  "homepage": "https://github.com/EricGomez101/surveyAPI#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "helmet": "^3.16.0"
+  }
+}
