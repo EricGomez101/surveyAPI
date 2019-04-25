@@ -4,7 +4,6 @@ const helmet = require('helmet');
 let port = process.env.PORT || 5000;
 const server = express();
 const surveyController = require("./Controllers/surveyController");
-//TODO connect to database
 
 // mount middleware
 server.use(cors());
