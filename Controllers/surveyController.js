@@ -24,6 +24,21 @@ router.route('/')
     .catch((err) => res.status(400).send(err.message));
   })
 
+router.route('/:id')
+  .get((req, res) => {
+    const { id } = req.params;
+    surveyService.getSurveyAndQuestions(id)
+    .then(survey => {
+      res.send(survey);
+    });
+  })
+  .post((req, res) => {
+    const { id } = req.params;
+    const {answers} = req.body;
+    surveyService.submitSurvey(id, answers)
+    .then((result) => res.send(result))
+    .catch(err => res.status(400).json({"message": "an error occured while trying to grade the submmited answers"}));
+  });
 router.route('/:id/questions/:question_id')
   .get((req, res) => {
     const { question_id } = req.params;
@@ -37,6 +52,7 @@ router.route('/:id/questions/:question_id')
     surveyService.deleteQuestionById(question_id)
     .then(res.status(204).send({}));
   })
+
 router.route('/:id/questions/')
   .get((req, res) => {
     const { id } = req.params;
@@ -52,22 +68,5 @@ router.route('/:id/questions/')
       res.status(400).json({"message": "missing required property 'question' "})
     }
   })
-
-router.route('/:id')
-  .get((req, res) => {
-    const { id } = req.params;
-    surveyService.getSurveyAndQuestions(id)
-    .then(survey => {
-      res.send(survey);
-    });
-  })
-  .post((req, res) => {
-    const { id } = req.params;
-    const {answers} = req.body;
-    surveyService.submitSurvey(id, answers)
-    .then((result) => res.send(result))
-    .catch(err => res.status(400).json({"message": "error parsing answers."}));
-  });
-
 
 module.exports = router;

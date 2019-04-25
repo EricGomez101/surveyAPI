@@ -45,14 +45,14 @@ const deleteQuestionById = (id) => knex
 const submitSurvey = (id, answers) => {
     return getSurveyAndQuestions(id)
     .then(survey => {
-        if (survey.questions.length < 1) return {};
-        
         let questions = {};
         const total = survey.questions.length;
         let correct = 0;
-        
-        survey.questions.map((question) => questions[question.id] = {'id': question.id, 'description': question.description, 'correct_answer': question.answer});
 
+        // converting the questions array to an ordered collection and using the id as the key.
+        survey.questions.map((question) => questions[question.id] = {'id': question.id, 'description': question.description, 'correct_answer': question.answer});
+        
+        //checking an answer to the correct question's answer.
         answers.map(answer => {
             if (!questions[answer.id]['your_answer'] && questions[answer.id]) {
                 if (questions[answer.id]['correct_answer'] === answer.answer) {
