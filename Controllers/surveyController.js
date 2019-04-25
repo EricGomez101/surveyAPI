@@ -40,8 +40,7 @@ router.route('/:id/questions/:question_id')
 router.route('/:id/questions/')
   .get((req, res) => {
     const { id } = req.params;
-
-    
+    surveyService.getSurveyQuestions(id);
   })
   .post((req, res) => {
     const { id } = req.params;
@@ -53,7 +52,6 @@ router.route('/:id/questions/')
       res.status(400).json({"message": "missing required property 'question' "})
     }
   })
-
 
 router.route('/:id')
   .get((req, res) => {
@@ -68,7 +66,7 @@ router.route('/:id')
     const {answers} = req.body;
     surveyService.submitSurvey(id, answers)
     .then((result) => res.send(result))
-    .catch(err => res.status(400).send(err.message));
+    .catch(err => res.status(400).json({"message": "error parsing answers."}));
   });
 
 
