@@ -19,7 +19,7 @@ const getSurveyQuestions = (survey_id) => new Promise((resolve, reject) => {
     knex.raw('SELECT q.id, q.description, q.answer FROM survey JOIN question as q ON q.survey_id = survey.id WHERE survey.id = ' + survey_id)
         .then(({rows}) => resolve(rows))
         .catch(error => reject(error));
-})
+});
 
 const saveQuestion = (survey_id, question) => knex
     .raw('INSERT INTO question (description, answer, survey_id) VALUES (?, ?, ?)', [question.description, question.answer, survey_id])
@@ -27,7 +27,7 @@ const saveQuestion = (survey_id, question) => knex
 
 const saveQuestions = (survey_id, questions) => {
     questions.map(question => saveQuestion(survey_id, question));
-}
+};
 
 const getSurveyAndQuestions = survey_id => new Promise((resolve, reject) => 
     Promise.all([getSurvey(survey_id), getSurveyQuestions(survey_id)])
@@ -42,6 +42,50 @@ const getQuestion = (question_id) => knex
 const deleteQuestionById = (id) => knex
     .raw('DELETE FROM question WHERE question.id = ' + id);
 
+const submitSurvey = (id, answers) => {
+    return getSurveyAndQuestions(id)
+    .then(survey => {
+        let questions = {};
+        const total = survey.questions.length;
+        let correct = 0;
+        
+        survey.questions.map((question) => questions[question.id] = {'description': question.description, 'correct_answer': question.answer});
+
+        answers.map(answer => {
+            if (!questions[answer.id]['your_answer'] && questions[answer.id]) {
+                if (questions[answer.id]['correct_answer'] === answer.answer) {
+                    correct++;
+                }
+                questions[answer.id]['your_answer'] = answer.answer;
+            }
+        });
+        // converting questions object to an array
+        questions = Object.keys(questions).map(key => {
+            questions[key]['id'] = key;
+            return questions[key];
+        })
+        
+
+        // checking for any missed questions.
+        questions.map(question => {
+            if (question['your_answer'] === undefined) {
+                question['your_answer'] = 'skipped';
+            }
+        })
+
+        return Object.assign(
+            {}, 
+            {
+                'id': survey.survey.id,
+                'description': survey.survey.description,
+                'ratio': `${correct}/${total} correct`, 
+                'percent_correct': `${((correct/total) * 100).toFixed(2)}%`,
+                'questions': questions,
+            },
+        );
+    });
+}
+
 
 module.exports = {
     getAllSurveys,
@@ -53,4 +97,5 @@ module.exports = {
     saveQuestion,
     saveQuestions,
     saveSurvey,
+    submitSurvey
 };

@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const knex = require('../db/knex');
 const surveyService = require('../Persistence/surveyService');
 
 router.route('/')
@@ -12,10 +11,17 @@ router.route('/')
   })
   .post((req, res) => {
     const {survey, questions} = req.body;
-
-    surveyService
-    .saveSurvey(survey)
-    .then((surveys) => res.send(surveys));
+    surveyService.saveSurvey(survey)
+    .then((surveys) => {
+      const { id } = surveys[surveys.length - 1]
+      
+      if (questions) {
+        surveyService.saveQuestions(id, questions);
+      }
+      
+      res.status(201).send(surveys);
+    })
+    .catch((err) => res.status(400).send(err.message));
   })
 
 router.route('/:id/questions/:question_id')
@@ -31,6 +37,23 @@ router.route('/:id/questions/:question_id')
     surveyService.deleteQuestionById(question_id)
     .then(res.status(204).send({}));
   })
+router.route('/:id/questions/')
+  .get((req, res) => {
+    const { id } = req.params;
+
+    
+  })
+  .post((req, res) => {
+    const { id } = req.params;
+    const { question } = req.body;
+    if (question) {
+      surveyService.saveQuestion(id, question)
+      .then((survey) => res.status(201).send(survey));  
+    } else {
+      res.status(400).json({"message": "missing required property 'question' "})
+    }
+  })
+
 
 router.route('/:id')
   .get((req, res) => {
@@ -42,14 +65,11 @@ router.route('/:id')
   })
   .post((req, res) => {
     const { id } = req.params;
-    const { question } = req.body;
-    if (question) {
-      surveyService.saveQuestion(id, question)
-      .then((survey) => res.send(survey));  
-    } else {
-      res.status(400).json({"message": "missing required property 'question' "})
-    }
-  })
+    const {answers} = req.body;
+    surveyService.submitSurvey(id, answers)
+    .then((result) => res.send(result))
+    .catch(err => res.status(400).send(err.message));
+  });
 
 
 module.exports = router;
