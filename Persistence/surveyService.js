@@ -1,12 +1,12 @@
 const knex = require('../db/knex');
 
 const getAllSurveys = () => knex.raw('SELECT * FROM survey')
-    .then(({rows}) => rows)
+    .then((surveys) => surveys)
     .catch(error => error)
 
 const getSurveyById = (survey_id) => new Promise((resolve, reject) => {
     knex.raw('SELECT * FROM survey WHERE survey.id = ' + survey_id)
-        .then(({rows}) => resolve(rows))
+        .then((survey) => resolve(survey))
         .catch(error => reject(error));
 })
 
@@ -17,7 +17,7 @@ const saveSurvey = (survey) => knex
 
 const getSurveyQuestions = (survey_id) => new Promise((resolve, reject) => {
     knex.raw('SELECT q.id, q.description, q.answer FROM survey JOIN question as q ON q.survey_id = survey.id WHERE survey.id = ' + survey_id)
-        .then(({rows}) => resolve(rows))
+        .then((questions) => resolve(questions))
         .catch(error => reject(error));
 });
 
@@ -31,13 +31,13 @@ const saveQuestions = (survey_id, questions) => {
 
 const getSurveyAndQuestions = survey_id => new Promise((resolve, reject) => 
     Promise.all([getSurveyById(survey_id), getSurveyQuestions(survey_id)])
-    .then((arr) => resolve({survey: arr[0]['0'], questions: [...arr[1]]}))
+    .then((arr) => resolve({survey: arr[0], questions: arr[1]}))
     .catch(err => reject(err))
 );
 
 const getQuestion = (question_id) => knex
     .raw('SELECT * FROM question WHERE id = ' + question_id)
-    .then(({rows}) => rows);
+    .then((question) => question);
 
 const deleteQuestionById = (id) => knex
     .raw('DELETE FROM question WHERE question.id = ' + id);
@@ -55,7 +55,7 @@ const submitSurvey = (id, answers) => {
         //checking an answer to the correct question's answer.
         answers.map(answer => {
             if (!questions[answer.id]['your_answer'] && questions[answer.id]) {
-                if (questions[answer.id]['correct_answer'] === answer.answer) {
+                if (questions[answer.id]['correct_answer'] == answer.answer) {
                     correct++;
                 }
                 questions[answer.id]['your_answer'] = answer.answer;

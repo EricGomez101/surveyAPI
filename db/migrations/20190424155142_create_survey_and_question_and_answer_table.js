@@ -13,9 +13,9 @@ exports.up = function(knex, Promise) {
     table.timestamp('created_at').defaultTo(knex.fn.now());
     table.timestamp('updated_at').defaultTo(knex.fn.now());
     table.integer('survey_id').references('id').inTable('survey').onUpdate('CASCADE').onDelete('CASCADE');
-  })
+  });
 };
 
 exports.down = function(knex, Promise) {
-  return knex.schema.dropTable('answer').dropTable('question').dropTable('survey');
+  return knex.schema.dropTable('question').dropTable('survey');
 };

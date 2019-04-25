@@ -1,18 +1,21 @@
 module.exports = {
     development: {
-        client: 'pg',
+        client: "sqlite3",
+        useNullAsDefault: true,
         connection: {
-            host : 'localhost',
-            user : 'postgres',
-            password: 'password',
-            database : 'survey_dev'
+            filename: __dirname + '/db/dev.sqlite3'
         },
         migrations: {
-            directory: __dirname + '/db/migrations',
+            directory: __dirname + '/db/migrations'
         },
         seeds: {
-            directory: __dirname + '/db/seeds',
+            directory: __dirname + '/db/seeds'
         },
+        pool: {
+            afterCreate: (conn, done) => {
+            conn.run("PRAGMA foreign_keys = ON", done);
+            }
+        }
     },
     production: {
         client: 'pg',
