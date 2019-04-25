@@ -1,27 +1,80 @@
-# Take-home exercise for backend interviews at Eaze
+# Survey Documentation
 
-Build the API to allow for the anonymous creation/taking of surveys (i.e. you don't have to create a user account to create a survey).
+## Installation instructions
+* npm install
+* npm start
 
-Ideally you will use either NodeJS, or .NET Core. These are the two primary platforms that we use at Eaze. You may use another language/platform (e.g., Python, Java, Ruby) if you so choose, but please be aware it will take us significantly longer in that case to get back to you with feedback.
+## Steps To Production
+* Step one add a Procfile with the required info to set up a dyno on heroku
+* Step two i would push the git repo to heroku which would automatically build and launnch the site
+* Step three add a postgres database via addon's
+* Step four i would add the connection info to the environment variables.
+* Step five would be to add migrations and seeds to the database.
 
-## General
+## API Documentation
+* ## /api/v1/surveys
+    * GET returns an array of all surveys
+    * POST accepts a survey and an array of questions and saves it to the database
+        * ### example of an accepted JSON schema
+            ```
+                {
+                    "survey": {
+                        "description": "this is a new survey."
+                    },
+                    "questions": [
+                        {
+                            "description": "question one.",
+                            "answer": true
+                        }
+                    ]
+                }
+            ```
 
-* Please include a README with instructions on how to run it. 
-* Use whatever libraries you like. 
-* Finally, have fun!
-
-## Specifications:
-
-API Should Support:
-* Creating a survey
-* Taking a Survey
-* Getting Results of a Survey
-* A survey should consist of survey questions and each question should have yes/no (true/false) answers
-
-Note: no frontend is needed and any submitted will not be part of review.
-
-## Data Persistence
-
-* You will need to persist the data in some way. 
-* You DO NOT need to use any external data persistance (database,cache etc), and the easier for us to run it the better :).  
-* But think about how you would want to do it in production and write up (one paragraph) how you would do it. 
+* ## /api/v1/surveys/{id}
+    * GET returnes the survey info and the questions with it
+    * POST accepts an array of answers with the correct id's of the question being answered and returns the ratio, correct percentage, etc..
+        * ### an example of the expected JSON structure
+            ```
+            {   
+                "answers": [
+                    {"id": 1, "answer": true},
+                    {"id": 2, "answer": false}
+                ]
+            }
+            ```
+        * ### an example of what is returned
+            ```
+                {
+                    "id": 1,
+                    "description": "lorem ipsum",
+                    "ratio": "2/7 correct",
+                    "percent_correct": "28.57%",
+                    "questions": [
+                        {
+                        "id": 1,
+                        "description": "lorem",
+                        "correct_answer": true,
+                        "your_answer": true
+                        },
+                        {
+                        "id": 2,
+                        "description": "ipsum",
+                        "correct_answer": true,
+                        "your_answer": false
+                        },
+                        {
+                        "id": 3,
+                        "description": "dolor",
+                        "correct_answer": true,
+                        "your_answer": true
+                        },
+                        {
+                        "id": 4,
+                        "description": "sit",
+                        "correct_answer": true,
+                        "your_answer": "skipped"
+                        },
+                        { etc... }
+                    ]
+                }
+            ```

@@ -4,7 +4,7 @@ const getAllSurveys = () => knex.raw('SELECT * FROM survey')
     .then(({rows}) => rows)
     .catch(error => error)
 
-const getSurvey = (survey_id) => new Promise((resolve, reject) => {
+const getSurveyById = (survey_id) => new Promise((resolve, reject) => {
     knex.raw('SELECT * FROM survey WHERE survey.id = ' + survey_id)
         .then(({rows}) => resolve(rows))
         .catch(error => reject(error));
@@ -30,7 +30,7 @@ const saveQuestions = (survey_id, questions) => {
 };
 
 const getSurveyAndQuestions = survey_id => new Promise((resolve, reject) => 
-    Promise.all([getSurvey(survey_id), getSurveyQuestions(survey_id)])
+    Promise.all([getSurveyById(survey_id), getSurveyQuestions(survey_id)])
     .then((arr) => resolve({survey: arr[0]['0'], questions: [...arr[1]]}))
     .catch(err => reject(err))
 );
@@ -88,7 +88,7 @@ const submitSurvey = (id, answers) => {
 
 module.exports = {
     getAllSurveys,
-    getSurvey,
+    getSurveyById,
     getSurveyQuestions,
     getSurveyAndQuestions,
     getQuestion,

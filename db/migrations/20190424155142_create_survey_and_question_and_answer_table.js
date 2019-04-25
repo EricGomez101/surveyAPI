@@ -14,10 +14,6 @@ exports.up = function(knex, Promise) {
     table.timestamp('updated_at').defaultTo(knex.fn.now());
     table.integer('survey_id').references('id').inTable('survey').onUpdate('CASCADE').onDelete('CASCADE');
   })
-  .createTable('answer', (table) => {
-      table.integer('question_id').references('id').inTable('question').onUpdate('CASCADE').onDelete('CASCADE').primary();
-      table.boolean('answer').notNullable();
-  });
 };
 
 exports.down = function(knex, Promise) {

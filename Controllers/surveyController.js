@@ -37,7 +37,7 @@ router.route('/:id')
     const {answers} = req.body;
     surveyService.submitSurvey(id, answers)
     .then((result) => res.send(result))
-    .catch(err => res.status(400).json({"message": "an error occured while trying to grade the submmited answers"}));
+    .catch(err => res.status(400).json({"message": "an error occured while trying to grade the submmited answers."}));
   });
 router.route('/:id/questions/:question_id')
   .get((req, res) => {
