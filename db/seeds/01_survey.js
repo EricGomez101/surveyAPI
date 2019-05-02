@@ -5,9 +5,9 @@ exports.seed = function(knex, Promise) {
     .then(function () {
       // Inserts seed entries
       return knex('survey').insert([
-        {description: 'pokemon'},
-        {description: 'gaming'},
-        {description: 'programming'}
+        {description: 'lorem ipsum', test: true},
+        {description: 'gaming', test:false},
+        {description: 'programming', test:false}
       ]);
     });
 };

@@ -11,8 +11,8 @@ const getSurveyById = (survey_id) => new Promise((resolve, reject) => {
 })
 
 
-const saveSurvey = (survey) => knex
-.raw('INSERT INTO survey (description) VALUES (?)', survey.description)
+const saveSurvey = (survey, test) => knex
+.raw('INSERT INTO survey (description, test) VALUES (?, ?)', survey.description, test)
 .then( () => getAllSurveys());
 
 const getSurveyQuestions = (survey_id) => new Promise((resolve, reject) => {
@@ -31,7 +31,7 @@ const saveQuestions = (survey_id, questions) => {
 
 const getSurveyAndQuestions = survey_id => new Promise((resolve, reject) => 
     Promise.all([getSurveyById(survey_id), getSurveyQuestions(survey_id)])
-    .then((arr) => resolve({survey: arr[0], questions: arr[1]}))
+    .then((arr) => resolve({survey: arr[0][0], questions: arr[1]}))
     .catch(err => reject(err))
 );
 
@@ -45,21 +45,51 @@ const deleteQuestionById = (id) => knex
 const submitSurvey = (id, answers) => {
     return getSurveyAndQuestions(id)
     .then(survey => {
+        if (survey.survey.test == false) {
+            let questions = {};
+
+            survey.questions.map((question) => questions[question.id] = {'id': question.id, 'description': question.description});
+            
+            answers.map(answer => {
+                if (questions[answer.id]) {
+                    questions[answer.id]['your_answer'] = answer.answer
+                }
+            });
+            
+            const questionsArr = Object.keys(questions).map(key => questions[key]);
+
+            questionsArr.map(question => {
+                if (question['your_answer'] === undefined) {
+                    question['your_answer'] = 'skipped';
+                }
+            })
+
+            return Object.assign(
+                {}, 
+                {
+                    'id': survey.survey.id,
+                    'description': survey.survey.description,
+                    'questions': questionsArr,
+                },
+            );
+        }
+
         let questions = {};
         const total = survey.questions.length;
         let correct = 0;
 
         // converting the questions array to an ordered collection and using the id as the key.
-        survey.questions.map((question) => questions[question.id] = {'id': question.id, 'description': question.description, 'correct_answer': question.answer});
+        survey.questions.map((question) => questions[question.id] = {'id': question.id, 'description': question.description, 'correct_answer': question.answer == 1 ? true: false});
         
         //checking an answer to the correct question's answer.
         answers.map(answer => {
-            if (!questions[answer.id]['your_answer'] && questions[answer.id]) {
+            if (questions[answer.id] && !questions[answer.id]['your_answer']) {
                 if (questions[answer.id]['correct_answer'] == answer.answer) {
                     correct++;
                 }
                 questions[answer.id]['your_answer'] = answer.answer;
             }
+            
         });
 
         // converting questions object to an array
