@@ -12,9 +12,9 @@
 * Step five would be to add migrations and seeds to the database.
 
 ## API Documentation
-* ## /api/v1/surveys
+* ## /api/v1/surveys?test={true}
     * GET returns an array of all surveys
-    * POST accepts a survey and an array of questions and saves it to the database
+    * POST accepts a survey and an array of questions and saves it to the database must pass the query "test" with a true property if its a test
         * ### example of an accepted JSON schema
             ```
                 {
@@ -24,7 +24,7 @@
                     "questions": [
                         {
                             "description": "question one.",
-                            "answer": true
+                            "answer": true (optional)
                         }
                     ]
                 }
